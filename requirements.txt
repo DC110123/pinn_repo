@@ -1,0 +1,7 @@
+pvlib
+numpy
+pandas
+tensorflow
+scikit-learn
+matplotlib
+joblib

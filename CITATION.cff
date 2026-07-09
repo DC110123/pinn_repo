@@ -1,1 +1,25 @@
-
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Universal PINN for Solar Panel I-V Curve Prediction"
+type: software
+version: 0.1.0
+date-released: 2026-03-01
+authors:
+  - family-names: "<Your Last Name>"
+    given-names: "<Your First Name>"
+repository-code: "https://github.com/DC110123/pinn_repo.git"
+abstract: >
+  A physics-informed neural network (PINN) that predicts the current-voltage
+  (I-V) characteristic curve and Maximum Power Point (MPP) of any silicon
+  solar panel, at arbitrary irradiance and temperature, using pvlib's CEC
+  module database for training data generation and Bayesian hyperparameter
+  optimization (Optuna) for model selection.
+keywords:
+  - physics-informed neural networks
+  - solar panel
+  - photovoltaic
+  - MPPT
+  - PINN
+  - Bayesian optimization
+  - pvlib
+license: MIT

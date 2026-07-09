@@ -2,6 +2,9 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
+# =============================================================================
+# 1. create a model and define train_step
+# =============================================================================
 def build_model(units1, units2, units3):
     return keras.Sequential([
         layers.InputLayer(shape=(12,)),

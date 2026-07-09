@@ -26,9 +26,12 @@ fit_cols = ['alpha_sc', 'a_ref', 'I_L_ref', 'I_o_ref_log', 'R_s', 'R_sh_ref_log'
 
 # --- 3. YOUR TEST FUNCTIONS (Copy-pasted from your prompt) ---
 
-def test_panel(panel_name):
-    try: row = df_db.loc[panel_name]
-    except: row = df_db.sample(1).iloc[0]; panel_name = row.name
+def test_panel(panel_name=None):
+    if panel_name is not None and panel_name in df_db.index:
+        row = df_db.loc[panel_name]
+    else:
+        row = df_db.sample(1, random_state=None).iloc[0]
+        panel_name = row.name
 
     dna_vals = [row[c] for c in fit_cols]
     dna_df = pd.DataFrame([dna_vals], columns=fit_cols)
@@ -37,18 +40,33 @@ def test_panel(panel_name):
     v_sweep = np.linspace(0, 1.0, 100)
     X_test = []
     for v in v_sweep:
-        X_test.append([1.0, 0.0, v] + dna_norm.tolist() + [row['V_oc_ref']/50.0, row['I_sc_ref']/10.0])
+        X_test.append([1.0, 0.0, v] + dna_norm.tolist() +
+                       [row['V_oc_ref'] / 50.0, row['I_sc_ref'] / 10.0])
 
     y_pred = model.predict(np.array(X_test, dtype='float32'), verbose=0)
     I_pred = y_pred.flatten() * row['I_sc_ref']
 
-    plt.figure(figsize=(10,6))
-    plt.plot(v_sweep * row['V_oc_ref'], I_pred, label='Universal PINN', color='blue', lw=3)
+    plt.figure(figsize=(10, 6))
+    plt.plot(v_sweep * row['V_oc_ref'], I_pred, label='Universal PINN (Bayes-tuned)',
+              color='blue', lw=3)
     plt.plot(row['V_mp_ref'], row['I_mp_ref'], 'ro', label='True MPP')
-    plt.axhline(row['I_sc_ref'], color='gray', ls=':'); plt.axvline(row['V_oc_ref'], color='gray', ls=':')
-    plt.xlabel("Voltage (V)")
-    plt.ylabel("Current (A)")
-    plt.title(f"{panel_name}"); plt.legend(); plt.grid(True, alpha=0.3); plt.show()
+    plt.axhline(row['I_sc_ref'], color='gray', ls=':')
+    plt.axvline(row['V_oc_ref'], color='gray', ls=':')
+    plt.title(f"{panel_name}")
+    plt.legend(); plt.grid(True, alpha=0.3); plt.show()
+
+
+print("\nPlotting results on a random held-out panel...")
+test_panel("Ablytek_5MN6C180_A0")  # picks a random panel; pass a specific index name if you want a fixed one
+
+# Optional: inspect the optimization history
+try:
+    optuna.visualization.matplotlib.plot_optimization_history(study)
+    plt.show()
+    optuna.visualization.matplotlib.plot_param_importances(study)
+    plt.show()
+except Exception as e:
+    print(f"(Skipping Optuna plots: {e})")
 
 # --- 4. EXECUTION ---
 if __name__ == "__main__":
